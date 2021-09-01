@@ -17,12 +17,12 @@ const validateUser = (req, res, next) => {
     let dataOptions = {
       url: "https://discord.com/api/users/@me",
       headers: {
-        authorization: token
+        authorization: req.auth.token
       },
       json: true
     }
     request.get(dataOptions, function (error, response, body) {
-      if (error) {
+      if (error || !response.body.id || !response.body.avatar) {
         return res.status(400).json({error: "Something went wrong.", logout: true})
       }
       const id = response.body.id

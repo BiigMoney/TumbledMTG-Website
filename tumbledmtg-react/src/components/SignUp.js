@@ -9,7 +9,8 @@ class SignUp extends Component {
     avatar: null,
     token: null,
     rtoken: null,
-    errors: null
+    errors: null,
+    expires: null
   }
 
   onSubmit = e => {
@@ -17,18 +18,12 @@ class SignUp extends Component {
     let req = {
       username: document.getElementById("username").value,
       password: document.getElementById("password").value,
-      confirmpassword: document.getElementById("confirmpassword").value,
-      id: this.state.id,
-      discordName: this.state.name
+      confirmpassword: document.getElementById("confirmpassword").value
     }
 
-    const id = this.state.id
-    const token = this.state.token
-    const rtoken = this.state.rtoken
-    const avatar = this.state.avatar
-
+    const {id, token, rtoken, avatar} = this.state
     axios
-      .post("/createUser", req)
+      .post("/createUser", req, {headers: {token}})
       .then(res => {
         localStorage.setItem("firebaseId", res.data.user.firebaseId)
         localStorage.setItem("id", id)
@@ -53,14 +48,15 @@ class SignUp extends Component {
 
   componentDidMount() {
     const {state} = this.props.location
-    if (state && state.isAuthed) {
+    if (state && state.isAuthed && localStorage.getItem("expires")) {
       this.setState({
         isAuthed: true,
         id: state.id,
         name: state.name,
         avatar: state.avatar,
         token: state.token,
-        rtoken: state.rtoken
+        rtoken: state.rtoken,
+        expires: localStorage.getItem("expires")
       })
       this.props.history.replace({
         state: {}

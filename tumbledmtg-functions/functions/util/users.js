@@ -1,6 +1,8 @@
 const {db, admin, testConnection, Return, challongekey, password} = require("./admin")
-const {validateUsername} = require("./validators")
+var moment = require("moment")
+const {validateUsername, validatePassword} = require("./validators")
 const axios = require("axios")
+const request = require("request")
 
 function getTournaments(id, name) {
   const moment = require("moment-timezone")
@@ -75,63 +77,68 @@ exports.createUser = (req, res) => {
   if (errors.length > 0) {
     return res.status(400).json({error: errors[0]})
   }
-  if (req.body.password.length < 6) {
-    return res.status(400).json({error: "Password cannot be less than 6 characters"})
+  errors = validatePassword(req.body.password, req.body.confirmpassword)
+  if (errors.length > 0) {
+    return res.status(400).json({error: errors[0]})
   }
 
-  if (req.body.password.length > 50) {
-    return res.status(400).json({error: "I demand that you pick a shorter password"})
+  let dataOptions = {
+    url: "https://discord.com/api/users/@me",
+    headers: {
+      authorization: req.headers.token
+    },
+    json: true
   }
-  if (req.body.password !== req.body.confirmpassword) {
-    return res.status(400).json({error: "Password and confirm password do not match"})
-  }
-  db.collection("users")
-    .where("username", "==", req.body.username)
-    .get()
-    .then(snap => {
-      if (snap.size === 0) {
-        var moment = require("moment")
-        let password = sha512(req.body.password, false)
-        let newUser = {
-          username: req.body.username,
-          id: req.body.id,
-          discordName: req.body.discordName,
-          createdAt: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
-          decklists: [],
-          tournaments: []
-        }
+  request.get(dataOptions, function (error, response, body) {
+    if (error || !response.body.id || !response.body.username || !response.body.discriminator) {
+      return res.status(400).json({error: "Something went wrong.", logout: true})
+    }
+    let newUser = {
+      username: req.body.username,
+      id: response.body.id,
+      discordName: `${response.body.username}#${response.body.discriminator}`,
+      createdAt: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
+      tournaments: []
+    }
+    db.collection("users")
+      .where("username", "==", req.body.username)
+      .get()
+      .then(snap => {
+        if (snap.size === 0) {
+          let password = sha512(req.body.password, false)
 
-        var connection = testConnection()
-        if (!connection) {
-          return res.status(500).json({error: "Error connecting to database, please try again later."})
-        }
-
-        connection.query(`insert into servatrice.cockatrice_users (admin,name,password_sha512,active,realname,gender,email,country,avatar_bmp,registrationDate,clientid,privlevelStartDate,privlevelEndDate) values (0,'${newUser.username}','${password}',1,'NA','N','NA','AA','NA','${newUser.createdAt}','NA','2221-01-01 00:00:01','2221-01-01 00:00:02');`, (error, response, fields) => {
-          if (error) {
-            console.error(error)
+          var connection = testConnection()
+          if (!connection) {
             return res.status(500).json({error: "Error connecting to database, please try again later."})
           }
-          db.collection("users")
-            .add(newUser)
-            .then(doc => {
-              getTournaments(newUser.id, newUser.discordName)
-              newUser.firebaseId = doc.id
-              return res.json({success: "Success", user: newUser})
-            })
-            .catch(err => {
-              console.error(err)
-              return res.status(500).json({error: err})
-            })
-        })
-        connection.end()
-      } else {
-        return res.status(404).json({error: "Username has already been taken."})
-      }
-    })
-    .catch(err => {
-      console.error(err)
-      return res.status(500).json({error: "Firebase fetch error, please try again."})
-    })
+
+          connection.query(`insert into servatrice.cockatrice_users (admin,name,password_sha512,active,realname,gender,email,country,avatar_bmp,registrationDate,clientid,privlevelStartDate,privlevelEndDate) values (0,'${newUser.username}','${password}',1,'NA','N','NA','AA','NA','${newUser.createdAt}','NA','2221-01-01 00:00:01','2221-01-01 00:00:02');`, (error, response, fields) => {
+            if (error) {
+              console.error(error)
+              return res.status(500).json({error: "Error connecting to database, please try again later."})
+            }
+            db.collection("users")
+              .add(newUser)
+              .then(doc => {
+                getTournaments(newUser.id, newUser.discordName)
+                newUser.firebaseId = doc.id
+                return res.json({success: "Success", user: newUser})
+              })
+              .catch(err => {
+                console.error(err)
+                return res.status(500).json({error: err})
+              })
+          })
+          connection.end()
+        } else {
+          return res.status(404).json({error: "Username has already been taken."})
+        }
+      })
+      .catch(err => {
+        console.error(err)
+        return res.status(500).json({error: "Firebase fetch error, please try again."})
+      })
+  })
 }
 
 exports.deleteUser = (req, res) => {

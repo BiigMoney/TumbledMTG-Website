@@ -2,6 +2,10 @@ const allowedPunctuation = "._-"
 const allowedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVQXYZ1234567890-._"
 const {admin} = require("./admin")
 
+function isEmpty(string) {
+  return !string || 0 === string.length
+}
+
 exports.validateUsername = username => {
   let errors = []
   if (!username) {
@@ -24,7 +28,26 @@ exports.validateUsername = username => {
   while (i--) {
     if (!allowedCharacters.includes(username.charAt(i))) {
       errors.push("Username has invalid characters")
+      break
     }
+  }
+  return errors
+}
+
+exports.validatePassword = (password, confirmPassword) => {
+  let errors = []
+  if (isEmpty(password)) {
+    return ["Invalid password"]
+  }
+  if (password.length < 6) {
+    errors.push("Password cannot be less than 6 characters")
+  }
+
+  if (password.length > 50) {
+    errors.push("I demand that you pick a shorter password")
+  }
+  if (password !== confirmPassword) {
+    errors.push("Password and confirm password do not match")
   }
   return errors
 }
@@ -171,8 +194,4 @@ exports.validateDecklist = newDecklist => {
       newDecklist.colors[4] = newDecklist.colors[4] / total
       return errors
     })
-}
-
-function isEmpty(string) {
-  return !string || 0 === string.length
 }

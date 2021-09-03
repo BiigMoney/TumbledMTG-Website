@@ -3,9 +3,9 @@ var moment = require("moment")
 const {validateUsername, validatePassword} = require("./validators")
 const axios = require("axios")
 const request = require("request")
+const momenttz = require("moment-timezone")
 
 function getTournaments(id, name) {
-  const moment = require("moment-timezone")
   admin
     .firestore()
     .collection("users")
@@ -15,27 +15,35 @@ function getTournaments(id, name) {
       if (snap.size === 1) {
         snap.forEach(doc => {
           const url = `https://api.challonge.com/v1/tournaments.json?api_key=${challongekey}`
-          axios.get(url).then(lol1 => {
-            let tournaments = lol1.data
+          request.get({url, json: true}, (error, res, body) => {
+            if (error) {
+              console.error(error)
+              return
+            }
+            let tournaments = body
             let total = 0
             let current = 0
-            tournaments.forEach(tournament => {
-              if (tournament.tournament.state != "complete") {
+            tournaments.forEach(({tournament}) => {
+              if (tournament.state != "complete") {
                 return
               }
-              let description = JSON.parse(tournament.tournament.description.replace(/<[^>]*>?/gm, ""))
-              const participanturl = `https://api.challonge.com/v1/tournaments/${tournament.tournament.id}/participants.json?api_key=${challongekey}`
-              axios.get(participanturl).then(lol2 => {
-                let participants = lol2.data
-                participants.forEach(participant => {
-                  if (name === participant.participant.name) {
+              let description = JSON.parse(tournament.description.replace(/<[^>]*>?/gm, ""))
+              const participanturl = `https://api.challonge.com/v1/tournaments/${tournament.id}/participants.json?api_key=${challongekey}`
+              request.get({url: participanturl, json: true}, (error, res, body) => {
+                if (error) {
+                  console.error(error)
+                  return
+                }
+                let participants = body
+                participants.forEach(({participant}) => {
+                  if (name === participant.name) {
                     total++
                     let newtournament = {
-                      place: participant.participant.final_rank,
-                      entrants: tournament.tournament.participants_count,
-                      decklistUsed: description.filter(a => a.name === participant.participant.name)[0].decklist,
-                      date: moment.tz(tournament.tournament.start_at, "America/Los_Angeles").format().split("T")[0],
-                      url: tournament.tournament.full_challonge_url
+                      place: participant.final_rank,
+                      entrants: tournament.participants_count,
+                      decklistUsed: description.filter(a => a.name === participant.name)[0].decklist,
+                      date: momenttz.tz(tournament.start_at, "America/Los_Angeles").format().split("T")[0],
+                      url: tournament.full_challonge_url
                     }
                     doc.ref.update({tournaments: admin.firestore.FieldValue.arrayUnion(newtournament)}).then(() => {
                       current++

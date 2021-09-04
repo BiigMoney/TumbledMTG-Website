@@ -1,4 +1,4 @@
-const {db, admin, testConnection, Return, discordSecret, challongekey, password, client} = require("./admin")
+const {db, admin, testConnection, Return, discordSecret, challongekey, password, sendMessage} = require("./admin")
 const {validateDecklist} = require("./validators")
 const request = require("request")
 const {v4: uuid} = require("uuid")
@@ -91,7 +91,7 @@ exports.uploadDecklist = async (req, res) => {
   batch
     .commit()
     .then(() => {
-      client.channels.cache.get(`655214733267304451`).send(`**${newDecklist.title}**\nby: ${newDecklist.author}\n<https://tumbledmtg.com/decklist=${newDecklist.id}>`)
+      sendMessage(`**${newDecklist.title}**\nby: ${newDecklist.author}\n<https://tumbledmtg.com/decklist=${newDecklist.id}>`)
       Return(req, res, {decklist: newDecklist})
     })
     .catch(err => {
@@ -122,8 +122,8 @@ exports.uploadDecklistAdmin = async (req, res) => {
   batch
     .commit()
     .then(() => {
-      client.channels.cache.get(`655214733267304451`).send(`**${newDecklist.title}**\nby: ${newDecklist.author}\n<https://tumbledmtg.com/decklist=${newDecklist.id}>`)
-      Return(req, res, {decklist: newDecklist})
+      sendMessage(`**${newDecklist.title}**\nby: ${newDecklist.author}\n<https://tumbledmtg.com/decklist=${newDecklist.id}>`)
+      return res.json({success: "Success", decklist: newDecklist})
     })
     .catch(err => {
       console.error(err)
@@ -134,14 +134,14 @@ exports.uploadDecklistAdmin = async (req, res) => {
 exports.getReplays = (req, res) => {
   db.collection("replays")
     .orderBy("id", "desc")
-    .limit(500)
+    .limit(250)
     .get()
     .then(data => {
       let replayList = []
       data.forEach(doc => {
         replayList.push(doc.data())
       })
-      return res.json(replayList.sort((a, b) => b.id - a.id))
+      return res.json(replayList)
     })
     .catch(err => {
       console.error(err)

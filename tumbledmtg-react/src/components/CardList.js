@@ -165,13 +165,13 @@ class CardList extends React.Component {
                   }
                   break
                 case "=":
-                  if (!(cmc === values[i].substring(1))) {
+                  if (!(cmc.toString() === values[i].substring(1))) {
                     valid = false
                   }
                   break
                 default:
                   if (!isNaN(values[i])) {
-                    if (!(cmc === values[i])) {
+                    if (!(cmc.toString() === values[i])) {
                       valid = false
                     }
                     break
@@ -286,7 +286,11 @@ class CardList extends React.Component {
               }
               break
             case "power":
-              const power = card.pt.charAt(0)
+              if (!card.pt) {
+                valid = false
+                break
+              }
+              const power = parseInt(card.pt.split("/")[0])
               switch (values[i].charAt(0)) {
                 case ">":
                   if (!(power > values[i].substring(1))) {
@@ -315,7 +319,11 @@ class CardList extends React.Component {
               }
               break
             case "toughness":
-              const toughness = card.pt.charAt(2)
+              if (!card.pt) {
+                valid = false
+                break
+              }
+              const toughness = parseInt(card.pt.split("/")[1])
               switch (values[i].charAt(0)) {
                 case ">":
                   if (!(toughness > values[i].substring(1))) {

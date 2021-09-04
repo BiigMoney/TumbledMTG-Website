@@ -38,7 +38,7 @@ class Decklists extends Component {
       pgNum: 1
     })
     if (path["/decklists"] !== undefined) {
-      this.handleSearch(path["/decklists"])
+      this.handleSearch(searchTerm)
     }
   }
 
@@ -107,7 +107,7 @@ class Decklists extends Component {
       const body = decklist.body.toLowerCase()
       const author = decklist.author.toLowerCase()
       const colors = decklist.colors
-      const stars = decklist.stars
+      const stars = decklist.stars.toString()
       const description = decklist.description
       const coloreq = 0.8
       const colorcol = 0.2

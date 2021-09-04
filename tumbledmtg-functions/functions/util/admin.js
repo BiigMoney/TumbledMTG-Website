@@ -1,6 +1,6 @@
 const functions = require("firebase-functions")
 const admin = require("firebase-admin")
-const {Client} = require("discord.js")
+const {Client, Intents} = require("discord.js")
 admin.initializeApp({databaseURL: "https://tumbledmtg-website-default-rtdb.firebaseio.com/"})
 const challongekey = functions.config().tumbledmtg.challongekey
 const discordSecret = functions.config().tumbledmtg.discordsecret
@@ -9,8 +9,17 @@ const db = admin.firestore()
 const request = require("request")
 
 var mysql = require("mysql")
-const client = new Client()
-client.login(functions.config().tumbledmtg.discordtoken)
+
+function sendMessage(message) {
+  const client = new Client({intents: [Intents.FLAGS.GUILDS]})
+  client.on("ready", client => {
+    client.channels.fetch("655214733267304451").then(channel => {
+      channel.send(message)
+      client.logo
+    })
+  })
+  client.login(functions.config().tumbledmtg.discordtoken)
+}
 
 const validateUser = (req, res, next) => {
   const getUser = () => {
@@ -107,4 +116,4 @@ const Return = (req, res, data) => {
   }
 }
 
-module.exports = {challongekey, client, db, validateUser, admin, testConnection, Return, discordSecret, password}
+module.exports = {challongekey, db, validateUser, admin, testConnection, Return, discordSecret, password, sendMessage}

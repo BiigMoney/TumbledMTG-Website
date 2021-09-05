@@ -12,13 +12,15 @@ var mysql = require("mysql")
 
 function sendMessage(message) {
   const client = new Client({intents: [Intents.FLAGS.GUILDS]})
-  client.on("ready", client => {
-    client.channels.fetch("655214733267304451").then(channel => {
-      channel.send(message)
-      client.logo
+  client.login(functions.config().tumbledmtg.discordtoken)
+  client.on("ready", clint => {
+    console.log(client === clint)
+    clint.channels.fetch("655214733267304451").then(channel => {
+      channel.send(message).then(() => {
+        clint.destroy()
+      })
     })
   })
-  client.login(functions.config().tumbledmtg.discordtoken)
 }
 
 const validateUser = (req, res, next) => {
@@ -116,4 +118,4 @@ const Return = (req, res, data) => {
   }
 }
 
-module.exports = {challongekey, db, validateUser, admin, testConnection, Return, discordSecret, password, sendMessage}
+module.exports = {challongekey, db, validateUser, admin, testConnection, Return, password, sendMessage, discordSecret}

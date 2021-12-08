@@ -2,9 +2,7 @@ const functions = require("firebase-functions")
 const admin = require("firebase-admin")
 const {Client, Intents} = require("discord.js")
 admin.initializeApp({databaseURL: "https://tumbledmtg-website-default-rtdb.firebaseio.com/"})
-const challongekey = functions.config().tumbledmtg.challongekey
-const discordSecret = functions.config().tumbledmtg.discordsecret
-const password = functions.config().tumbledmtg.password
+const {password, discordtoken, challongekey, discordsecret, mysqlhost, mysqluser, mysqlpassword} = functions.config().tumbledmtg
 const db = admin.firestore()
 const request = require("request")
 
@@ -12,12 +10,11 @@ var mysql = require("mysql")
 
 function sendMessage(message) {
   const client = new Client({intents: [Intents.FLAGS.GUILDS]})
-  client.login(functions.config().tumbledmtg.discordtoken)
-  client.on("ready", clint => {
-    console.log(client === clint)
-    clint.channels.fetch("655214733267304451").then(channel => {
+  client.login(discordtoken)
+  client.on("ready", client => {
+    client.channels.fetch("655214733267304451").then(channel => {
       channel.send(message).then(() => {
-        clint.destroy()
+        client.destroy()
       })
     })
   })
@@ -71,7 +68,7 @@ const validateUser = (req, res, next) => {
       form: {
         grant_type: "refresh_token",
         client_id: "791329045932802049",
-        client_secret: discordSecret,
+        client_secret: discordsecret,
         refresh_token: rtoken
       },
       headers: {
@@ -96,9 +93,9 @@ const validateUser = (req, res, next) => {
 const testConnection = () => {
   try {
     var connection = mysql.createConnection({
-      host: functions.config().tumbledmtg.mysqlhost,
-      user: functions.config().tumbledmtg.mysqluser,
-      password: functions.config().tumbledmtg.mysqlpassword,
+      host: mysqlhost,
+      user: mysqluser,
+      password: mysqlpassword,
       database: "servatrice"
     })
 
@@ -118,4 +115,4 @@ const Return = (req, res, data) => {
   }
 }
 
-module.exports = {challongekey, db, validateUser, admin, testConnection, Return, password, sendMessage, discordSecret}
+module.exports = {challongekey, db, validateUser, admin, testConnection, Return, password, sendMessage, discordsecret}

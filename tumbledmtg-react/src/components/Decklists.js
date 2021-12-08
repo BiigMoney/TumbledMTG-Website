@@ -38,7 +38,7 @@ class Decklists extends Component {
       pgNum: 1
     })
     if (path["/decklists"] !== undefined) {
-      this.handleSearch(searchTerm)
+      this.handleSearch(searchTerm, 1)
     }
   }
 
@@ -50,7 +50,7 @@ class Decklists extends Component {
       pgNum: parseInt(this.state.pgNum) + 1
     })
     if (path["/decklists"] !== undefined) {
-      this.handleSearch(path["/decklists"])
+      this.handleSearch(path["/decklists"], parseInt(this.state.pgNum) + 1)
     }
   }
 
@@ -62,17 +62,17 @@ class Decklists extends Component {
       pgNum: parseInt(this.state.pgNum) - 1
     })
     if (path["/decklists"] !== undefined) {
-      this.handleSearch(path["/decklists"])
+      this.handleSearch(path["/decklists"], parseInt(this.state.pgNum) - 1)
     }
   }
 
-  handleSearch = search => {
+  handleSearch = (search, pgNum) => {
     this.setState({isLoading: true})
 
     if (search.length === 0 || search === undefined) {
       this.setState({
         isLoading: false,
-        decklists: this.state.allDecklists.slice((this.state.pgNum - 1) * this.decklistsPerPage, this.state.pgNum * this.decklistsPerPage)
+        decklists: this.state.allDecklists
       })
       return
     }
@@ -258,7 +258,7 @@ class Decklists extends Component {
       tempDecklists.push(decklist)
     })
     this.setState({
-      decklists: tempDecklists.slice((this.state.pgNum - 1) * this.decklistsPerPage, this.state.pgNum * this.decklistsPerPage),
+      decklists: tempDecklists,
       isLoading: false
     })
   }
@@ -277,7 +277,7 @@ class Decklists extends Component {
             isLoading: false,
             pgNum: parseInt(path["pg"])
           })
-          this.handleSearch(path["/decklists"])
+          this.handleSearch(path["/decklists"], path["pg"])
         })
         .catch(err => {
           console.error(err)
@@ -295,7 +295,7 @@ class Decklists extends Component {
             isLoading: false,
             pgNum: parseInt(path["pg"])
           })
-          this.handleSearch(path["/decklists"])
+          this.handleSearch(path["/decklists"], path["pg"])
         })
         .catch(err => {
           console.error(err)
@@ -326,7 +326,7 @@ class Decklists extends Component {
               </tr>
             </thead>
             <tbody>
-              {this.state.decklists.map(decklist => {
+              {this.state.decklists.slice((this.state.pgNum - 1) * this.decklistsPerPage, this.state.pgNum * this.decklistsPerPage).map(decklist => {
                 return (
                   <tr key={decklist.decklistId}>
                     <th scope="col" style={{textAlign: "center"}}>
@@ -400,7 +400,7 @@ class Decklists extends Component {
           </a>
         </div>
         <div className="pagebuttons">
-          {!this.state.isLoading && this.state.allDecklists.length > (parseInt(this.state.pgNum) - 1) * this.decklistsPerPage && this.state.pgNum > 1 ? (
+          {!this.state.isLoading && this.state.decklists.length > (parseInt(this.state.pgNum) - 1) * this.decklistsPerPage && this.state.pgNum > 1 ? (
             <Link
               to={{
                 pathname: `/decklists=${queryString.parse(this.props.location.pathname)["/decklists"]}&pg=${parseInt(this.state.pgNum) - 1}`
@@ -411,7 +411,7 @@ class Decklists extends Component {
           ) : (
             <button disabled>Previous Page</button>
           )}
-          {!this.state.isLoading && this.state.allDecklists.length > this.decklistsPerPage && Math.ceil(this.state.allDecklists.length / this.decklistsPerPage) > this.state.pgNum ? (
+          {!this.state.isLoading && this.state.decklists.length > this.decklistsPerPage && Math.ceil(this.state.decklists.length / this.decklistsPerPage) > this.state.pgNum ? (
             <Link
               to={{
                 pathname: `/decklists=${queryString.parse(this.props.location.pathname)["/decklists"]}&pg=${parseInt(this.state.pgNum) + 1}`
@@ -428,7 +428,7 @@ class Decklists extends Component {
         <br />
         {!this.state.isLoading && this.state.decklists.length > 15 ? (
           <div className="pagebuttons">
-            {!this.state.isLoading && this.state.allDecklists.length > (parseInt(this.state.pgNum) - 1) * this.decklistsPerPage && this.state.pgNum > 1 ? (
+            {!this.state.isLoading && this.state.decklists.length > (parseInt(this.state.pgNum) - 1) * this.decklistsPerPage && this.state.pgNum > 1 ? (
               <Link
                 to={{
                   pathname: `/decklists=${queryString.parse(this.props.location.pathname)["/decklists"]}&pg=${parseInt(this.state.pgNum) - 1}`
@@ -439,7 +439,7 @@ class Decklists extends Component {
             ) : (
               <button disabled>Previous Page</button>
             )}
-            {!this.state.isLoading && this.state.allDecklists.length > this.decklistsPerPage && 1 + Math.floor(this.state.allDecklists.length / this.decklistsPerPage) > this.state.pgNum ? (
+            {!this.state.isLoading && this.state.decklists.length > this.decklistsPerPage && 1 + Math.floor(this.state.decklists.length / this.decklistsPerPage) > this.state.pgNum ? (
               <Link
                 to={{
                   pathname: `/decklists=${queryString.parse(this.props.location.pathname)["/decklists"]}&pg=${parseInt(this.state.pgNum) + 1}`

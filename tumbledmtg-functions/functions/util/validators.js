@@ -78,7 +78,10 @@ exports.validateDecklist = newDecklist => {
   const lines = body.split("\n")
   if (lines.length === 0) {
     errors.push("Decklist body cannot be empty.")
-    return false
+  }
+
+  if (errors.length > 0) {
+    return errors
   }
 
   const projectDatabase = admin.database()

@@ -3,7 +3,7 @@ var cors = require("cors")
 const {validateUser} = require("./util/admin")
 const express = require("express")
 const {deleteUser, updateUsername, resetPassword, getUser, checkLogin, createUser} = require("./util/users")
-const {uploadDecklist, uploadDecklistAdmin, getReplays, getTournaments, getTournament, getDecklists, getCards, callback, getDecklist, tourneyResults, decklistsByUser, deleteDecklist, addStars, uploadReplay, testDecklist, checkDecklist} = require("./util/data")
+const {uploadDecklist, uploadDecklistAdmin, getReplays, getTournaments, getTournament, getDecklists, getCards, getCard, callback, getDecklist, tourneyResults, decklistsByUser, deleteDecklist, addStars, uploadReplay, testDecklist, checkDecklist} = require("./util/data")
 const app = express()
 
 app.use(cors())
@@ -29,6 +29,8 @@ app.get("/user/:userId", getUser)
 app.get("/decklists", getDecklists)
 
 app.get("/cards", getCards)
+
+app.get("/card/:cardName", getCard)
 
 app.get("/decklists/:decklistId", getDecklist)
 

@@ -24,30 +24,28 @@ const ReplaySkeleton = () => {
     )
   })
   return (
-    <div>
-      <table className="table table-striped table-dark">
-        <thead>
-          <tr>
-            <th scope="col" style={{textAlign: "center"}}>
-              Lobby Name
-            </th>
-            <th scope="col" style={{textAlign: "center"}}>
-              Host
-            </th>
-            <th scope="col" style={{textAlign: "center"}}>
-              Duration
-            </th>
-            <th scope="col" style={{textAlign: "center"}}>
-              Date
-            </th>
-            <th scope="col" style={{textAlign: "center"}}>
-              Download
-            </th>
-          </tr>
-        </thead>
-        <tbody>{content}</tbody>
-      </table>
-    </div>
+    <table className="table table-striped table-dark">
+      <thead>
+        <tr>
+          <th scope="col" style={{textAlign: "center"}}>
+            Lobby Name
+          </th>
+          <th scope="col" style={{textAlign: "center"}}>
+            Host
+          </th>
+          <th scope="col" style={{textAlign: "center"}}>
+            Duration
+          </th>
+          <th scope="col" style={{textAlign: "center"}}>
+            Date
+          </th>
+          <th scope="col" style={{textAlign: "center"}}>
+            Download
+          </th>
+        </tr>
+      </thead>
+      <tbody>{content}</tbody>
+    </table>
   )
 }
 

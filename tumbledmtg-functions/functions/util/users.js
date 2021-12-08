@@ -46,7 +46,7 @@ function getTournaments(id, name) {
                     }
                     doc.ref.update({tournaments: admin.firestore.FieldValue.arrayUnion(newtournament)}).then(() => {
                       current++
-                      if (total == current) {
+                      if (total === current) {
                         sortTournaments(id)
                       }
                     })
@@ -69,11 +69,9 @@ function sortTournaments(id) {
     .then(snap => {
       if (snap.size === 1) {
         snap.forEach(doc => {
-          let tournaments = doc.data().tournaments
+          let {tournaments} = doc.data()
           tournaments.sort((a, b) => (a.date > b.date ? 1 : b.date > a.date ? -1 : 0))
-          doc.ref.update({
-            tournaments: tournaments
-          })
+          doc.ref.update({tournaments})
         })
       }
     })

@@ -1,6 +1,8 @@
+import {Fragment} from "react"
+
 const ProfileSkeleton = () => {
   return (
-    <div>
+    <Fragment>
       <h3>Discord Name: </h3>
       <h4>
         <div class="spinner-border" role="status">
@@ -21,7 +23,7 @@ const ProfileSkeleton = () => {
           <span class="sr-only">Loading...</span>
         </div>
       </h4>
-    </div>
+    </Fragment>
   )
 }
 

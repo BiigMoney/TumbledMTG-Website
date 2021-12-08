@@ -1,4 +1,4 @@
-const {db, admin, testConnection, Return, discordSecret, challongekey, password, sendMessage} = require("./admin")
+const {db, admin, testConnection, Return, discordsecret, challongekey, password, sendMessage} = require("./admin")
 const {validateDecklist} = require("./validators")
 const request = require("request")
 const {v4: uuid} = require("uuid")
@@ -13,7 +13,7 @@ exports.callback = (req, res) => {
         redirect_uri: `https://us-central1-tumbledmtg-website.cloudfunctions.net/api/callback`,
         grant_type: "authorization_code",
         client_id: "791329045932802049",
-        client_secret: discordSecret,
+        client_secret: discordsecret,
         scope: "identify"
       },
       headers: {
@@ -40,26 +40,26 @@ exports.callback = (req, res) => {
               .get()
               .then(snap => {
                 if (snap.size === 0) {
-                  res.redirect(`http://tumbledmtg.com/hqpERZ7PVMms6atWuC09?account=false&token=${fullToken}&id=${response.body.id}&name=${fullName}&pic=${response.body.avatar}&rtoken=${rtoken}`)
+                  res.redirect(`http://tumbledmtg-website.firebaseapp.com/hqpERZ7PVMms6atWuC09?account=false&token=${fullToken}&id=${response.body.id}&name=${fullName}&pic=${response.body.avatar}&rtoken=${rtoken}`)
                 } else {
                   let firebaseToken = ""
                   snap.forEach(snapShot => (firebaseToken = snapShot.id))
-                  res.redirect(`http://tumbledmtg.com/hqpERZ7PVMms6atWuC09?account=true&token=${fullToken}&pic=${response.body.avatar}&rtoken=${rtoken}&id=${response.body.id}&fid=${firebaseToken}`)
+                  res.redirect(`http://tumbledmtg-website.firebaseapp.com/hqpERZ7PVMms6atWuC09?account=true&token=${fullToken}&pic=${response.body.avatar}&rtoken=${rtoken}&id=${response.body.id}&fid=${firebaseToken}`)
                 }
               })
               .catch(err => {
                 console.error(err)
                 let error = "Server error"
-                return res.redirect(`http://tumbledmtg.com/temp?error=${error}`)
+                return res.redirect(`http://tumbledmtg-website.firebaseapp.com/temp?error=${error}`)
               })
           } else {
             let error = "Invalid data fetch"
-            res.redirect(`http://tumbledmtg.com/temp?error=${error}`)
+            res.redirect(`http://tumbledmtg-website.firebaseapp.com/temp?error=${error}`)
           }
         })
       } else {
         let error = "Invalid token fetch"
-        res.redirect(`http://tumbledmtg.com/temp?error=${error}`)
+        res.redirect(`http://tumbledmtg-website.firebaseapp.com/temp?error=${error}`)
       }
     })
   }
@@ -91,7 +91,7 @@ exports.uploadDecklist = async (req, res) => {
   batch
     .commit()
     .then(() => {
-      sendMessage(`**${newDecklist.title}**\nby: ${newDecklist.author}\n<https://tumbledmtg.com/decklist=${newDecklist.id}>`)
+      sendMessage(`**${newDecklist.title}**\nby: ${newDecklist.author}\n<https://tumbledmtg-website.firebaseapp.com/decklist=${newDecklist.id}>`)
       Return(req, res, {decklist: newDecklist})
     })
     .catch(err => {
@@ -122,7 +122,7 @@ exports.uploadDecklistAdmin = async (req, res) => {
   batch
     .commit()
     .then(() => {
-      sendMessage(`**${newDecklist.title}**\nby: ${newDecklist.author}\n<https://tumbledmtg.com/decklist=${newDecklist.id}>`)
+      sendMessage(`**${newDecklist.title}**\nby: ${newDecklist.author}\n<https://tumbledmtg-website.firebaseapp.com/decklist=${newDecklist.id}>`)
       return res.json({success: "Success", decklist: newDecklist})
     })
     .catch(err => {
@@ -245,6 +245,26 @@ exports.getCards = (req, res) => {
     .then(snap => {
       return res.json(snap.val().card)
     })
+    .catch(err => {
+      console.error(err)
+      return res.status(500).json({error: "Could not get cards"})
+    })
+}
+
+exports.getCard = (req, res) => {
+  let search = req.params.cardName
+  admin
+    .database()
+    .ref()
+    .child("cards")
+    .get()
+    .then(snap => {
+      return res.json(snap.val().card.find(card => card.name === search))
+    })
+    .catch(err => {
+      console.error(err)
+      return res.status(500).json({error: "Could not get card"})
+    })
 }
 
 exports.getDecklist = (req, res) => {
@@ -261,7 +281,7 @@ exports.getDecklist = (req, res) => {
     })
     .catch(err => {
       console.error(err)
-      return res.status(404).json({error: "Cant find"})
+      return res.status(500).json({error: "Could not get decklist"})
     })
 }
 

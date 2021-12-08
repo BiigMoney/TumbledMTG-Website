@@ -24,23 +24,21 @@ const DecklistsSkeleton = () => {
     )
   })
   return (
-    <div>
-      <table className="table table-striped table-dark">
-        <thead>
-          <tr>
-            <th scope="col" style={{textAlign: "center"}}>
-              Stars
-            </th>
-            <th scope="col">Colors</th>
-            <th scope="col">Title</th>
-            <th scope="col">Author</th>
-            <th scope="col">Format</th>
-            <th scope="col">Date</th>
-          </tr>
-        </thead>
-        <tbody>{content}</tbody>
-      </table>
-    </div>
+    <table className="table table-striped table-dark">
+      <thead>
+        <tr>
+          <th scope="col" style={{textAlign: "center"}}>
+            Stars
+          </th>
+          <th scope="col">Colors</th>
+          <th scope="col">Title</th>
+          <th scope="col">Author</th>
+          <th scope="col">Format</th>
+          <th scope="col">Date</th>
+        </tr>
+      </thead>
+      <tbody>{content}</tbody>
+    </table>
   )
 }
 

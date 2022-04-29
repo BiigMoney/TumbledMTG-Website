@@ -1,10 +1,10 @@
 import {Component} from "react"
 import axios from "axios"
-import {Link} from "react-router-dom"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import queryString from "query-string"
 import ReplaySkeleton from "./ReplaySkeleton"
+import {NextPrevButtons} from "./NextPrevButtons"
 
 class Replays extends Component {
   replaysPerPage = 25
@@ -17,6 +17,7 @@ class Replays extends Component {
   }
 
   pgUp = () => {
+    this.props.history.push(`/replays=${queryString.parse(this.props.location.pathname)["/replays"]}&pg=${parseInt(this.state.pgNum) + 1}`)
     this.setState({
       replays: this.state.allReplays.slice(this.state.pgNum * this.replaysPerPage, (this.state.pgNum + 1) * this.replaysPerPage),
       pgNum: parseInt(this.state.pgNum) + 1
@@ -24,6 +25,7 @@ class Replays extends Component {
   }
 
   pgDown = () => {
+    this.props.history.push(`/replays=${queryString.parse(this.props.location.pathname)["/replays"]}&pg=${parseInt(this.state.pgNum) - 1}`)
     this.setState({
       replays: this.state.allReplays.slice((this.state.pgNum - 2) * this.replaysPerPage, (this.state.pgNum - 1) * this.replaysPerPage),
       pgNum: parseInt(this.state.pgNum) - 1
@@ -116,57 +118,10 @@ class Replays extends Component {
       )
     return (
       <div className="container">
-        <div className="pagebuttons">
-          {!this.state.isLoading && this.state.allReplays.length > (parseInt(this.state.pgNum) - 1) * this.replaysPerPage && this.state.pgNum > 1 ? (
-            <Link
-              to={{
-                pathname: `/replays=${queryString.parse(this.props.location.pathname)["/replays"]}&pg=${parseInt(this.state.pgNum) - 1}`
-              }}
-            >
-              <button onClick={this.pgDown}>Previous Page</button>
-            </Link>
-          ) : (
-            <button disabled>Previous Page</button>
-          )}
-          {!this.state.isLoading && this.state.allReplays.length > this.replaysPerPage && Math.ceil(this.state.allReplays.length / this.replaysPerPage) > this.state.pgNum ? (
-            <Link
-              to={{
-                pathname: `/replays=${queryString.parse(this.props.location.pathname)["/replays"]}&pg=${parseInt(this.state.pgNum) + 1}`
-              }}
-            >
-              <button onClick={this.pgUp}>Next Page</button>
-            </Link>
-          ) : (
-            <button disabled>Next Page</button>
-          )}
-        </div>
+        <NextPrevButtons onNext={this.pgUp} nextDisabled={!this.state.isLoading && this.state.allReplays.length > this.replaysPerPage && Math.ceil(this.state.allReplays.length / this.replaysPerPage) > this.state.pgNum} onPrev={this.pgDown} prevDisabled={!this.state.isLoading && this.state.allReplays.length > (parseInt(this.state.pgNum) - 1) * this.replaysPerPage && this.state.pgNum > 1} />
+        <br />
         {replaysMarkup}
-        {!this.state.isLoading && this.state.replays.length > 15 ? (
-          <div className="pagebuttons">
-            {!this.state.isLoading && this.state.allReplays.length > (parseInt(this.state.pgNum) - 1) * this.replaysPerPage && this.state.pgNum > 1 ? (
-              <Link
-                to={{
-                  pathname: `/replays=${queryString.parse(this.props.location.pathname)["/replays"]}&pg=${parseInt(this.state.pgNum) - 1}`
-                }}
-              >
-                <button onClick={this.pgDown}>Previous Page</button>
-              </Link>
-            ) : (
-              <button disabled>Previous Page</button>
-            )}
-            {!this.state.isLoading && this.state.allReplays.length > this.replaysPerPage && 1 + Math.floor(this.state.allReplays.length / this.replaysPerPage) > this.state.pgNum ? (
-              <Link
-                to={{
-                  pathname: `/replays=${queryString.parse(this.props.location.pathname)["/replays"]}&pg=${parseInt(this.state.pgNum) + 1}`
-                }}
-              >
-                <button onClick={this.pgUp}>Next Page</button>
-              </Link>
-            ) : (
-              <button disabled>Next Page</button>
-            )}
-          </div>
-        ) : null}
+        {!this.state.isLoading && this.state.replays.length > 15 ? <NextPrevButtons bottom onNext={this.pgUp} nextDisabled={!this.state.isLoading && this.state.allReplays.length > this.replaysPerPage && Math.ceil(this.state.allReplays.length / this.replaysPerPage) > this.state.pgNum} onPrev={this.pgDown} prevDisabled={!this.state.isLoading && this.state.allReplays.length > (parseInt(this.state.pgNum) - 1) * this.replaysPerPage && this.state.pgNum > 1} /> : null}
       </div>
     )
   }

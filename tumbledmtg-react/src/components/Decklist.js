@@ -91,7 +91,7 @@ class Decklist extends Component {
       line.link = "card=" + string
       string = string.substring(0, string.length - 1)
       line.name = string
-      line.url = `https://firebasestorage.googleapis.com/v0/b/tumbledmtg-website.appspot.com/o/${encodeURI(string)}.jpg?alt=media`
+      line.url = `https://firebasestorage.googleapis.com/v0/b/tumbledmtg-website.appspot.com/o/${encodeURI(string)}.png?alt=media`
     }
     this.setMarkup()
   }

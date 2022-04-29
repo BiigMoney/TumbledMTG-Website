@@ -1,10 +1,11 @@
-import React from "react"
+import {Fragment, Component} from "react"
 import queryString from "query-string"
-import {Link} from "react-router-dom"
 import SearchBar from "./SearchBar"
+import {Link} from "react-router-dom"
 import axios from "axios"
+import {NextPrevButtons} from "./NextPrevButtons"
 
-class CardList extends React.Component {
+class CardList extends Component {
   cardsPerPage = 40
 
   state = {
@@ -18,6 +19,7 @@ class CardList extends React.Component {
   }
 
   pgUp = () => {
+    this.props.history.push(`/search=${queryString.parse(this.props.location.pathname)["/search"].replace("+", "%2B")}&pg=${parseInt(this.state.pgNum) + 1}`)
     let path = queryString.parse(window.location.pathname)
     let {searchTerm, pgNum, fbCards} = this.state
     this.setState({
@@ -33,6 +35,7 @@ class CardList extends React.Component {
   }
 
   pgDown = () => {
+    this.props.history.push(`/search=${queryString.parse(this.props.location.pathname)["/search"].replace("+", "%2B")}&pg=${parseInt(this.state.pgNum) - 1}`)
     let path = queryString.parse(window.location.pathname)
     let {searchTerm, pgNum, fbCards} = this.state
     this.setState({
@@ -56,7 +59,7 @@ class CardList extends React.Component {
     let {searchTerm} = this.state
     this.setState({
       pgNum: 1,
-      currentSearch: path["/search"]
+      currentSearch: searchTerm
     })
     if ((path["/search"] === "null" && searchTerm.length === 0) || (path["/search"].length === 0 && searchTerm.length === 0)) {
       this.getFromAll(this.state.fbCards, 1)
@@ -114,10 +117,10 @@ class CardList extends React.Component {
     var keywords = []
     var values = []
     var searchwords = []
-    var validKeyWords = ["cmc", "o", "t", "c", "-o", "power", "toughness", "type", "p", "-c", "-t", "-type", "is", "mv"]
+    var validKeyWords = ["cmc", "o", "t", "c", "-o", "power", "toughness", "type", "p", "-c", "-t", "-type", "is", "mv", "rarity", "-rarity"]
     words.forEach(word => {
       if (!word.includes(":")) {
-        searchwords.push(word)
+        searchwords.push(word.toLowerCase())
       } else {
         var halfs = word.split(":")
         halfs[0] === "mv" ? keywords.push("cmc") : keywords.push(halfs[0])
@@ -136,12 +139,20 @@ class CardList extends React.Component {
     }
     fbCards.forEach(card => {
       var valid = true
-      const title = card.name
+      const title = card.name.toLowerCase()
       const colors = card.color.toLowerCase()
       const type = card.type.toLowerCase()
+      let related = card.related || ""
+
+      if (Array.isArray(related)) related = related.join(" ")
+      related = related.toLowerCase()
+
+      let rarity = card.rarity || "unknown"
+      if (Array.isArray(card.rarity)) rarity = card.rarity[0]
+      rarity = rarity.toLowerCase()
 
       searchwords.forEach(word => {
-        if (!title.toLowerCase().includes(word.toLowerCase())) {
+        if (!(title.includes(word) || related.includes(word))) {
           valid = false
         }
       })
@@ -262,6 +273,16 @@ class CardList extends React.Component {
               break
             case "t":
               if (!type.includes(values[i].toLowerCase())) {
+                valid = false
+              }
+              break
+            case "rarity":
+              if (!rarity === values[i].toLowerCase()) {
+                valid = false
+              }
+              break
+            case "-rarity":
+              if (rarity === values[i].toLowerCase()) {
                 valid = false
               }
               break
@@ -391,13 +412,13 @@ class CardList extends React.Component {
     if (endidx < tempCards.length) {
       for (var i = startidx; i < endidx; i++) {
         const card = tempCards[i]
-        card["url"] = `https://firebasestorage.googleapis.com/v0/b/tumbledmtg-website.appspot.com/o/${encodeURI(card.name)}.jpg?alt=media`
+        card["url"] = `https://firebasestorage.googleapis.com/v0/b/tumbledmtg-website.appspot.com/o/${encodeURI(card.name)}.png?alt=media`
         cards.push(card)
       }
     } else {
       for (var j = startidx; j < tempCards.length; j++) {
         const card = tempCards[j]
-        card["url"] = `https://firebasestorage.googleapis.com/v0/b/tumbledmtg-website.appspot.com/o/${encodeURI(card.name)}.jpg?alt=media`
+        card["url"] = `https://firebasestorage.googleapis.com/v0/b/tumbledmtg-website.appspot.com/o/${encodeURI(card.name)}.png?alt=media`
         cards.push(card)
       }
     }
@@ -406,11 +427,20 @@ class CardList extends React.Component {
   }
 
   componentDidMount() {
-    let path = queryString.parse(window.location.pathname)
-    axios.get("/cards").then(res => {
-      this.setState({fbCards: res.data, currentSearch: path["/search"], pgNum: path["pg"]})
-      this.handleSearch(path["/search"], path["pg"], res.data)
-    })
+    axios
+      .get("/cards")
+      .then(res => {
+        let path = queryString.parse(window.location.pathname)
+        if (path["/search"].length > 0) {
+          this.setState({fbCards: res.data, currentSearch: path["/search"], pgNum: path["pg"], searchTerm: path["/search"]})
+          this.handleSearch(path["/search"], path["pg"], res.data)
+        } else {
+          this.setState({fbCards: res.data, pgNum: 1})
+        }
+      })
+      .catch(err => {
+        console.error(err)
+      })
   }
   componentDidUpdate() {
     let path = queryString.parse(window.location.pathname)
@@ -426,8 +456,8 @@ class CardList extends React.Component {
 
   render() {
     return (
-      <React.Fragment>
-        <SearchBar onChange={this.onChange} searchTerm={this.state.searchTerm} onSubmit={this.disableSubmit} placeholder="search for cards..." thing="search" />
+      <Fragment>
+        <SearchBar onChange={this.onChange} searchTerm={this.state.searchTerm} onSubmit={this.disableSubmit} placeholder="search for cards..." page="search" value={this.state.searchTerm} />
         <div className="needhelp" style={{textAlign: "center"}}>
           <a href="/advancedsearch">
             <button type="button" className="btn btn-dark">
@@ -435,37 +465,15 @@ class CardList extends React.Component {
             </button>
           </a>
         </div>
-        <div className="pagebuttons">
-          {!this.state.isLoading && this.state.allCards.length > (parseInt(this.state.pgNum) - 1) * this.cardsPerPage && this.state.pgNum > 1 ? (
-            <Link
-              to={{
-                pathname: `/search=${queryString.parse(this.props.location.pathname)["/search"].replace("+", "%2B")}&pg=${parseInt(this.state.pgNum) - 1}`
-              }}
-            >
-              <button onClick={this.pgDown}>Previous Page</button>
-            </Link>
-          ) : (
-            <button disabled>Previous Page</button>
-          )}
-          {!this.state.isLoading && this.state.allCards.length > this.cardsPerPage && Math.ceil(this.state.allCards.length / this.cardsPerPage) > this.state.pgNum ? (
-            <Link
-              to={{
-                pathname: `/search=${queryString.parse(this.props.location.pathname)["/search"].replace("+", "%2B")}&pg=${parseInt(this.state.pgNum) + 1}`
-              }}
-            >
-              <button onClick={this.pgUp}>Next Page</button>
-            </Link>
-          ) : (
-            <button disabled>Next Page</button>
-          )}
-        </div>
+        <NextPrevButtons prevDisabled={!this.state.isLoading && this.state.allCards.length > (parseInt(this.state.pgNum) - 1) * this.cardsPerPage && this.state.pgNum > 1} onPrev={this.pgDown} nextDisabled={!this.state.isLoading && this.state.allCards.length > this.cardsPerPage && Math.ceil(this.state.allCards.length / this.cardsPerPage) > this.state.pgNum} onNext={this.pgUp} />
+        <br />
         <div className="bigcard">{!this.state.isLoading && this.state.cards.length === 0 ? <header>Could not find any cards</header> : <div></div>}</div>
         <div className="container">
           <div className="row">
             {!this.state.isLoading &&
               this.state.cards.map(card => {
                 return (
-                  <div key={card.name} className="col-md-3" style={{marginBottom: "2rem"}}>
+                  <div key={card.name} className="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12" style={{marginBottom: "2rem"}}>
                     <div className="imageList__container">
                       <p>
                         <Link
@@ -482,33 +490,8 @@ class CardList extends React.Component {
               })}
           </div>
         </div>
-        {this.state.cards.length > 8 ? (
-          <div className="pagebuttons">
-            {!this.state.isLoading && this.state.allCards.length > (parseInt(this.state.pgNum) - 1) * this.cardsPerPage && this.state.pgNum > 1 ? (
-              <Link
-                to={{
-                  pathname: `/search=${queryString.parse(this.props.location.pathname)["/search"].replace("+", "%2B")}&pg=${parseInt(this.state.pgNum) - 1}`
-                }}
-              >
-                <button onClick={this.pgDown}>Previous Page</button>
-              </Link>
-            ) : (
-              <button disabled>Previous Page</button>
-            )}
-            {!this.state.isLoading && this.state.allCards.length > this.cardsPerPage && Math.ceil(this.state.allCards.length / this.cardsPerPage) > this.state.pgNum ? (
-              <Link
-                to={{
-                  pathname: `/search=${queryString.parse(this.props.location.pathname)["/search"].replace("+", "%2B")}&pg=${parseInt(this.state.pgNum) + 1}`
-                }}
-              >
-                <button onClick={this.pgUp}>Next Page</button>
-              </Link>
-            ) : (
-              <button disabled>Next Page</button>
-            )}
-          </div>
-        ) : null}
-      </React.Fragment>
+        {this.state.cards.length > 8 ? <NextPrevButtons bottom prevDisabled={!this.state.isLoading && this.state.allCards.length > (parseInt(this.state.pgNum) - 1) * this.cardsPerPage && this.state.pgNum > 1} prevNext={this.pgDown} nextDisabled={!this.state.isLoading && this.state.allCards.length > this.cardsPerPage && Math.ceil(this.state.allCards.length / this.cardsPerPage) > this.state.pgNum} onNext={this.pgUp} /> : null}
+      </Fragment>
     )
   }
 }

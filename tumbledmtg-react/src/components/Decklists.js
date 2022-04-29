@@ -10,6 +10,7 @@ import star3 from "../resources/3_stars.png"
 import star2 from "../resources/2_stars.png"
 import star1 from "../resources/1_stars.png"
 import DecklistsSkeleton from "./DecklistsSkeleton"
+import {NextPrevButtons} from "./NextPrevButtons"
 
 class Decklists extends Component {
   decklistsPerPage = 30
@@ -43,6 +44,7 @@ class Decklists extends Component {
   }
 
   pgUp = () => {
+    this.props.history.push(`/decklists=${queryString.parse(this.props.location.pathname)["/decklists"]}&pg=${parseInt(this.state.pgNum) + 1}`)
     let path = queryString.parse(window.location.pathname)
     this.setState({
       decklists: [],
@@ -55,6 +57,7 @@ class Decklists extends Component {
   }
 
   pgDown = () => {
+    this.props.history.push(`/decklists=${queryString.parse(this.props.location.pathname)["/decklists"]}&pg=${parseInt(this.state.pgNum) - 1}`)
     let path = queryString.parse(window.location.pathname)
     this.setState({
       decklists: [],
@@ -275,7 +278,8 @@ class Decklists extends Component {
           this.setState({
             allDecklists: res.data,
             isLoading: false,
-            pgNum: parseInt(path["pg"])
+            pgNum: parseInt(path["pg"]),
+            searchTerm: path["/decklists"]
           })
           this.handleSearch(path["/decklists"], path["pg"])
         })
@@ -293,7 +297,8 @@ class Decklists extends Component {
           this.setState({
             allDecklists: res.data,
             isLoading: false,
-            pgNum: parseInt(path["pg"])
+            pgNum: parseInt(path["pg"]),
+            searchTerm: path["/decklists"]
           })
           this.handleSearch(path["/decklists"], path["pg"])
         })
@@ -391,7 +396,7 @@ class Decklists extends Component {
       )
     return (
       <div className="container">
-        <SearchBar onChange={this.onChange} searchTerm={this.state.searchTerm} onSubmit={this.disableSubmit} placeholder="search for decklists..." thing="decklists" />
+        <SearchBar onChange={this.onChange} searchTerm={this.state.searchTerm} onSubmit={this.disableSubmit} placeholder="search for decklists..." page="decklists" value={this.state.searchTerm} />
         <div className="needhelp" style={{textAlign: "center"}}>
           <a href="/advdecklistsearch">
             <button type="button" className="btn btn-dark">
@@ -399,59 +404,11 @@ class Decklists extends Component {
             </button>
           </a>
         </div>
-        <div className="pagebuttons">
-          {!this.state.isLoading && this.state.decklists.length > (parseInt(this.state.pgNum) - 1) * this.decklistsPerPage && this.state.pgNum > 1 ? (
-            <Link
-              to={{
-                pathname: `/decklists=${queryString.parse(this.props.location.pathname)["/decklists"]}&pg=${parseInt(this.state.pgNum) - 1}`
-              }}
-            >
-              <button onClick={this.pgDown}>Previous Page</button>
-            </Link>
-          ) : (
-            <button disabled>Previous Page</button>
-          )}
-          {!this.state.isLoading && this.state.decklists.length > this.decklistsPerPage && Math.ceil(this.state.decklists.length / this.decklistsPerPage) > this.state.pgNum ? (
-            <Link
-              to={{
-                pathname: `/decklists=${queryString.parse(this.props.location.pathname)["/decklists"]}&pg=${parseInt(this.state.pgNum) + 1}`
-              }}
-            >
-              <button onClick={this.pgUp}>Next Page</button>
-            </Link>
-          ) : (
-            <button disabled>Next Page</button>
-          )}
-        </div>
+        <NextPrevButtons nextDisabled={!this.state.isLoading && this.state.decklists.length > this.decklistsPerPage && Math.ceil(this.state.decklists.length / this.decklistsPerPage) > this.state.pgNum} onNext={this.pgUp} prevDisabled={!this.state.isLoading && this.state.decklists.length > (parseInt(this.state.pgNum) - 1) * this.decklistsPerPage && this.state.pgNum > 1} onPrev={this.pgDown} />
         <br />
         {decklistsMarkup}
         <br />
-        {!this.state.isLoading && this.state.decklists.length > 15 ? (
-          <div className="pagebuttons">
-            {!this.state.isLoading && this.state.decklists.length > (parseInt(this.state.pgNum) - 1) * this.decklistsPerPage && this.state.pgNum > 1 ? (
-              <Link
-                to={{
-                  pathname: `/decklists=${queryString.parse(this.props.location.pathname)["/decklists"]}&pg=${parseInt(this.state.pgNum) - 1}`
-                }}
-              >
-                <button onClick={this.pgDown}>Previous Page</button>
-              </Link>
-            ) : (
-              <button disabled>Previous Page</button>
-            )}
-            {!this.state.isLoading && this.state.decklists.length > this.decklistsPerPage && 1 + Math.floor(this.state.decklists.length / this.decklistsPerPage) > this.state.pgNum ? (
-              <Link
-                to={{
-                  pathname: `/decklists=${queryString.parse(this.props.location.pathname)["/decklists"]}&pg=${parseInt(this.state.pgNum) + 1}`
-                }}
-              >
-                <button onClick={this.pgUp}>Next Page</button>
-              </Link>
-            ) : (
-              <button disabled>Next Page</button>
-            )}
-          </div>
-        ) : null}
+        {!this.state.isLoading && this.state.decklists.length > 15 ? <NextPrevButtons bottom nextDisabled={!this.state.isLoading && this.state.decklists.length > this.decklistsPerPage && Math.ceil(this.state.decklists.length / this.decklistsPerPage) > this.state.pgNum} onNext={this.pgUp} prevDisabled={!this.state.isLoading && this.state.decklists.length > (parseInt(this.state.pgNum) - 1) * this.decklistsPerPage && this.state.pgNum > 1} onPrev={this.pgDown} /> : null}
       </div>
     )
   }

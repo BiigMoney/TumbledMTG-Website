@@ -115,17 +115,23 @@ class Tournaments extends Component {
         <h5 style={{textIndent: 50}}> {"// 15 Sideboard"}</h5>
         <h5 style={{textIndent: 50}}> SB: 15 TBLD Island</h5>
         <br />
-        <div className="pagebuttons">
+
+        {tournamentsMarkup}
+        <div className="justify-content-center" style={{display: "flex"}}>
           {!this.state.isLoading && this.state.allTournaments.length > (parseInt(this.state.pgNum) - 1) * this.tournamentsPerPage && this.state.pgNum > 1 ? (
             <Link
               to={{
                 pathname: `/tournaments&pg=${parseInt(this.state.pgNum) - 1}`
               }}
             >
-              <button onClick={this.pgDown}>Previous Page</button>
+              <button onClick={this.pgDown} className="btn btn-outline-success" style={{width: 120}}>
+                Previous Page
+              </button>
             </Link>
           ) : (
-            <button disabled>Previous Page</button>
+            <button disabled className="btn btn-outline-success" style={{width: 120}}>
+              Previous Page
+            </button>
           )}
           {!this.state.isLoading && this.state.allTournaments.length > this.tournamentsPerPage && Math.ceil(this.state.allTournaments.length / this.tournamentsPerPage) > this.state.pgNum ? (
             <Link
@@ -133,13 +139,16 @@ class Tournaments extends Component {
                 pathname: `/tournaments&pg=${parseInt(this.state.pgNum) + 1}`
               }}
             >
-              <button onClick={this.pgUp}>Next Page</button>
+              <button onClick={this.pgUp} className="btn btn-outline-success" style={{width: 120}}>
+                Next Page
+              </button>
             </Link>
           ) : (
-            <button disabled>Next Page</button>
+            <button disabled className="btn btn-outline-success" style={{width: 120}}>
+              Next Page
+            </button>
           )}
         </div>
-        {tournamentsMarkup}
       </div>
     )
   }

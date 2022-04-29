@@ -8,7 +8,7 @@ import card6 from "../resources/Player Six Emblem.jpg"
 const CustomRules = () => {
   return (
     <div className="container">
-      <h2>Custom Rules</h2>
+      <h2>Standard Rules</h2>
       <div style={{fontSize: 20, marginTop: 20}}>
         <ul>
           <li>

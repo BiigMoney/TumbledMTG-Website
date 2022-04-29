@@ -267,7 +267,7 @@ exports.getUser = (req, res) => {
 }
 
 exports.checkLogin = (req, res) => {
-  Return(req, res, {avatar: req.user.avatar})
+  Return(req, res, {avatar: req?.user?.avatar})
 }
 
 function sha512(password, salted) {

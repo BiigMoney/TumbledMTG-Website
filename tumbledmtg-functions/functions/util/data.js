@@ -40,26 +40,26 @@ exports.callback = (req, res) => {
               .get()
               .then(snap => {
                 if (snap.size === 0) {
-                  res.redirect(`http://tumbledmtg-website.firebaseapp.com/hqpERZ7PVMms6atWuC09?account=false&token=${fullToken}&id=${response.body.id}&name=${fullName}&pic=${response.body.avatar}&rtoken=${rtoken}`)
+                  res.redirect(`http://tumbledmtg.com/hqpERZ7PVMms6atWuC09?account=false&token=${fullToken}&id=${response.body.id}&name=${fullName}&pic=${response.body.avatar}&rtoken=${rtoken}`)
                 } else {
                   let firebaseToken = ""
                   snap.forEach(snapShot => (firebaseToken = snapShot.id))
-                  res.redirect(`http://tumbledmtg-website.firebaseapp.com/hqpERZ7PVMms6atWuC09?account=true&token=${fullToken}&pic=${response.body.avatar}&rtoken=${rtoken}&id=${response.body.id}&fid=${firebaseToken}`)
+                  res.redirect(`http://tumbledmtg.com/hqpERZ7PVMms6atWuC09?account=true&token=${fullToken}&pic=${response.body.avatar}&rtoken=${rtoken}&id=${response.body.id}&fid=${firebaseToken}`)
                 }
               })
               .catch(err => {
                 console.error(err)
                 let error = "Server error"
-                return res.redirect(`http://tumbledmtg-website.firebaseapp.com/temp?error=${error}`)
+                return res.redirect(`http://tumbledmtg.com/hqpERZ7PVMms6atWuC09?error=${error}`)
               })
           } else {
             let error = "Invalid data fetch"
-            res.redirect(`http://tumbledmtg-website.firebaseapp.com/temp?error=${error}`)
+            res.redirect(`http://tumbledmtg.com/hqpERZ7PVMms6atWuC09?error=${error}`)
           }
         })
       } else {
         let error = "Invalid token fetch"
-        res.redirect(`http://tumbledmtg-website.firebaseapp.com/temp?error=${error}`)
+        res.redirect(`http://tumbledmtg.com/hqpERZ7PVMms6atWuC09?error=${error}`)
       }
     })
   }
@@ -91,7 +91,7 @@ exports.uploadDecklist = async (req, res) => {
   batch
     .commit()
     .then(() => {
-      sendMessage(`**${newDecklist.title}**\nby: ${newDecklist.author}\n<https://tumbledmtg-website.firebaseapp.com/decklist=${newDecklist.id}>`)
+      sendMessage(`**${newDecklist.title}**\nby: ${newDecklist.author}\n<https://tumbledmtg.com/decklist=${newDecklist.id}>`)
       Return(req, res, {decklist: newDecklist})
     })
     .catch(err => {
@@ -122,7 +122,7 @@ exports.uploadDecklistAdmin = async (req, res) => {
   batch
     .commit()
     .then(() => {
-      sendMessage(`**${newDecklist.title}**\nby: ${newDecklist.author}\n<https://tumbledmtg-website.firebaseapp.com/decklist=${newDecklist.id}>`)
+      sendMessage(`**${newDecklist.title}**\nby: ${newDecklist.author}\n<https://tumbledmtg.com/decklist=${newDecklist.id}>`)
       return res.json({success: "Success", decklist: newDecklist})
     })
     .catch(err => {
@@ -134,7 +134,7 @@ exports.uploadDecklistAdmin = async (req, res) => {
 exports.getReplays = (req, res) => {
   db.collection("replays")
     .orderBy("id", "desc")
-    .limit(250)
+    .limit(100)
     .get()
     .then(data => {
       let replayList = []
@@ -471,7 +471,7 @@ exports.checkDecklist = (req, res) => {
             if (lines[i].charAt(0) == "/" && lines[i].charAt(1) == "/") {
               continue
             }
-            if (isEmpty(lines[i])) {
+            if (!lines[i] || 0 === lines[i].length) {
               continue
             }
             const words = lines[i].split(" ")

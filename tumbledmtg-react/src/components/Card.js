@@ -15,7 +15,7 @@ class Card extends React.Component {
       .then(res => {
         let card = res.data
         if (!(card === undefined)) {
-          card["url"] = `https://firebasestorage.googleapis.com/v0/b/tumbledmtg-website.appspot.com/o/${encodeURI(card.name)}.jpg?alt=media`
+          card["url"] = `https://firebasestorage.googleapis.com/v0/b/tumbledmtg-website.appspot.com/o/${encodeURI(card.name)}.png?alt=media`
           this.setState({card: card})
         } else {
           this.setState({error: "Card is either banned or does not exist."})
@@ -47,11 +47,11 @@ class Card extends React.Component {
                 <div style={{display: "inline-block"}}>
                   <span style={{display: "inline-block"}}>
                     <h4 style={{display: "inline-block", paddingRight: 10}}>Tags: </h4>
-                    {this.state.card.tags.split(" ").map(word => {
+                    {this.state.card.tags.split(" ").map((word, i) => {
                       return (
-                        <a href={`/search=is:${word}&pg=1`} style={{display: "inline-block", paddingRight: 3}}>
+                        <a href={`/search=is:${word}&pg=1`} style={{display: "inline-block", paddingRight: 3}} key={i}>
                           <h4>
-                            <span class="badge badge-secondary">{word}</span>
+                            <span className="badge badge-secondary">{word}</span>
                           </h4>
                         </a>
                       )

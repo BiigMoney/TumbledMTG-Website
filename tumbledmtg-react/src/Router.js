@@ -37,12 +37,15 @@ const Router = () => {
           </Route>
           <Route path="/search=:id" component={CardList} />
           <Route path="/card=:id" component={Card} />
-          <Route path="/customrules" component={CustomRules} />
+          <Route path="/standardrules" component={CustomRules} />
           <Route path="/duplexrules" component={DuplexRules} />
           <Route path="/decklists">
             <Redirect to="/decklists=&pg=1" />
           </Route>
           <Route path="/decklists=:id" component={Decklists} />
+          <Route path="/tournaments">
+            <Redirect to="/tournaments&pg=1" />
+          </Route>
           <Route path="/tournaments&pg=:id" component={Tournaments} />
           <Route path="/downloads" component={Downloads} />
           <Route path="/advancedsearch" component={AdvancedSearch} />
@@ -55,6 +58,9 @@ const Router = () => {
           <Route path="/profile=:id" component={Profile} />
           <Route path="/settings" component={Settings} />
           <Route path="/logout" component={Logout} />
+          <Route path="/replays">
+            <Redirect to="/replays&pg=1" />
+          </Route>
           <Route path="/replays=:id" component={Replays} />
           <Route component={NotFound} />
         </Switch>

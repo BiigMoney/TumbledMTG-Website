@@ -83,7 +83,7 @@ const validateUser = (req, res, next) => {
       }
       req.auth.token = `${response.body.token_type} ${response.body.access_token}`
       req.auth.rtoken = response.body.refresh_token
-      req.auth.expires = new Date(new Date().getTime() + 604600 * 1000).getTime()
+      req.auth.expires = new Date(new Date().getTime() + response.body.expires_in * 1000).getTime()
       req.auth.refreshed = true
       getUser()
     })
@@ -111,7 +111,7 @@ const Return = (req, res, data) => {
   if (req.auth.refreshed) {
     return res.json({success: "Success", refreshed: true, token: req.auth.token, expires: req.auth.expires, rtoken: req.auth.rtoken, ...data})
   } else {
-    return res.json({success: "Success", ...data})
+    return res.status(200).json({success: "Success", ...data})
   }
 }
 

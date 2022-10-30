@@ -22,8 +22,7 @@ import Logout from "./components/Logout"
 import Replays from "./components/Replays"
 import axios from "axios"
 
-axios.defaults.baseURL = "https://us-central1-tumbledmtg-website.cloudfunctions.net/api"
-//axios.defaults.baseURL = "http://localhost:5000/tumbledmtg-website/us-central1/api"
+axios.defaults.baseURL = process.env.API_ENDPOINT
 
 const Router = () => {
   return (

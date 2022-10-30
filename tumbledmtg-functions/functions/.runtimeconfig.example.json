@@ -1,0 +1,11 @@
+{
+  "tumbledmtg": {
+    "mysqluser": "",
+    "discordsecret": "",
+    "discordtoken": "",
+    "password": "",
+    "mysqlpassword": "",
+    "mysqlhost": "",
+    "challongekey": ""
+  }
+}

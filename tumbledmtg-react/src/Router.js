@@ -22,7 +22,7 @@ import Logout from "./components/Logout"
 import Replays from "./components/Replays"
 import axios from "axios"
 
-axios.defaults.baseURL = process.env.API_ENDPOINT
+axios.defaults.baseURL = process.env.REACT_APP_API_ENDPOINT
 
 const Router = () => {
   return (

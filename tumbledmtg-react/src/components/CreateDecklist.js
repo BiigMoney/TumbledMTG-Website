@@ -110,10 +110,10 @@ class CreateDecklist extends Component {
               </button>
             </form>
             <br />
-            {this.state.errors?.errors ? (
+            {this.state.errors ? (
               <div>
-                {this.state.errors.errors.map(error => {
-                  return <h5>{error}</h5>
+                {this.state.errors.map((error, i) => {
+                  return <h5 key={i}>{error}</h5>
                 })}
               </div>
             ) : null}

@@ -358,7 +358,7 @@ exports.deleteDecklist = (req, res) => {
   if (password !== req.headers.password) {
     return res.status(401).json({error: "Incorrect password"})
   }
-  db.doc(`/decklists/${req.params.decklistid}`)
+  db.doc(`/decklists/${req.params.decklistId}`)
     .delete()
     .then(() => {
       return res.json({success: "Successfully deleted decklist."})

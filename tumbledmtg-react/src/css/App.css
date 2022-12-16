@@ -75,16 +75,8 @@
   margin-bottom: 30px;
 }
 
-.bigimage {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 20px;
-}
-
 .fullimage {
-  width: 281px;
-  height: 392px;
+  max-width: 100%;
 }
 
 .centerimage {

@@ -18,7 +18,7 @@ const CustomRules = () => {
             <p>When a player searches their library, the last step of searching is always to shuffle their library.</p>
           </li>
           <li>
-            <p>The legendary supertype is not a copyable trait. This means that clones and copies of legendary creatures do not trigger the legend rule.</p>
+            <p>The legendary rule does not check copies. Thus, if a creature you control becomes a copy of another creature you control, you are not forced to sacrifice one of them.</p>
           </li>
           <li>
             <p>When flipping a coin in Cockatrice, it is customary to roll a d20 instead. If the result is 11 or higher, that means heads. Otherwise, the result counts as tails. Players predict heads by default if they do not call it otherwise.</p>
@@ -29,25 +29,25 @@ const CustomRules = () => {
         </ul>
       </div>
       <div className="row">
-        <div className="col-md-">
-          <img src={card1} className="bigimage" alt="" />
+        <div className="col-md-6 text-center">
+          <img src={card1} className="fullimage mb-3" alt="" />
         </div>
-        <div className="col-md-4">
-          <img src={card2} className="bigimage" alt="" />
+        <div className="col-md-6 text-center">
+          <img src={card2} className="fullimage mb-3" alt="" />
         </div>
       </div>
       <div className="row">
-        <div className="col-md-3">
-          <img src={card3} className="fullimage" alt="" />
+        <div className="col-lg-3 col-md-6 text-center">
+          <img src={card3} className="fullimage mb-3" alt="" />
         </div>
-        <div className="col-md-3">
-          <img src={card4} className="fullimage" alt="" />
+        <div className="col-lg-3 col-md-6 text-center">
+          <img src={card4} className="fullimage mb-3" alt="" />
         </div>
-        <div className="col-md-3">
-          <img src={card5} className="fullimage" alt="" />
+        <div className="col-lg-3 col-md-6 text-center">
+          <img src={card5} className="fullimage mb-3" alt="" />
         </div>
-        <div className="col-md-3">
-          <img src={card6} className="fullimage" alt="" />
+        <div className="col-lg-3 col-md-6 text-center">
+          <img src={card6} className="fullimage mb-3" alt="" />
         </div>
       </div>
     </div>

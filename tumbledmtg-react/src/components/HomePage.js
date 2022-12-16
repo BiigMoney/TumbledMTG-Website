@@ -21,7 +21,7 @@ const HomePage = () => {
         </a>
       </div>
       <div style={{fontSize: 20, marginTop: 20}}>
-        <a href="https://nightly.link/Tumbles/TumbledMTG-Cockatrice/workflows/test/auto/TumbledMTG-Cockatrice-Files.zip">
+        <a href="https://nightly.link/OKThomas1/TumbledMTG-Cockatrice/workflows/build/auto/TumbledMTG-Cockatrice-Files.zip">
           <p>Cockatrice files for manual installation</p>
         </a>
         <a href="https://www.dropbox.com/sh/6pfwfl2hefzkdc2/AAA6r-63bnFkTVhNxiMF7ITxa?dl=0">
@@ -30,7 +30,7 @@ const HomePage = () => {
       </div>
       <div className="server">
         <p style={{marginRight: 25}}>Cockatrice Server</p>
-        <p>Host: 24.67.112.53</p>
+        <p>Host: servatrice.tumbledmtg.com</p>
         <p>Port: 4747</p>
       </div>
     </div>

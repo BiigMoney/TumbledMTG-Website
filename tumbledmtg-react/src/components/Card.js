@@ -39,37 +39,34 @@ class Card extends React.Component {
             <h2 style={{textAlign: "center"}}>Card is either banned or does not exist.</h2>
           </div>
         ) : (
-          <div>
-            <div className="cardtext">
-              <img src={this.state.card.url} className="bigimage" alt="" />
+          <div className="cardtext text-center">
+            <img src={this.state.card.url} className="bigimage" alt="" />
+            <br />
 
-              {this.state.card.tags ? (
-                <div style={{display: "inline-block"}}>
-                  <span style={{display: "inline-block"}}>
-                    <h4 style={{display: "inline-block", paddingRight: 10}}>Tags: </h4>
-                    {this.state.card.tags.split(" ").map((word, i) => {
-                      return (
-                        <a href={`/search=is:${word}&pg=1`} style={{display: "inline-block", paddingRight: 3}} key={i}>
-                          <h4>
-                            <span className="badge badge-secondary">{word}</span>
-                          </h4>
-                        </a>
-                      )
-                    })}
-                  </span>
-                </div>
-              ) : null}
-              <br />
-              <a href={`/decklists=${this.state.card.name}&pg=1`}>
-                <h4>See all decklists that include this card.</h4>
-              </a>
-              <br />
+            {this.state.card.tags ? (
+              <span style={{display: "inline-block"}}>
+                <h4 style={{display: "inline-block", paddingRight: 10}}>Tags: </h4>
+                {this.state.card.tags.split(" ").map((word, i) => {
+                  return (
+                    <a href={`/search=is:${word}&pg=1`} style={{display: "inline-block", paddingRight: 3}} key={i}>
+                      <h4>
+                        <span className="badge badge-secondary">{word}</span>
+                      </h4>
+                    </a>
+                  )
+                })}
+              </span>
+            ) : null}
+            <br />
+            <a href={`/decklists=${this.state.card.name}&pg=1`}>
+              <h4>See all decklists that include this card.</h4>
+            </a>
+            <br />
 
-              <h3>{this.state.card.name}</h3>
-              <h4>{this.state.card.type}</h4>
-              <h5>{this.state.card.text}</h5>
-              <h1>{this.state.card.pt}</h1>
-            </div>
+            <h3>{this.state.card.name}</h3>
+            <h4>{this.state.card.type}</h4>
+            <h5>{this.state.card.text}</h5>
+            <h1>{this.state.card.pt}</h1>
           </div>
         )}
       </div>

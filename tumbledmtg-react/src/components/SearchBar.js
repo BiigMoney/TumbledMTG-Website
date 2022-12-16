@@ -4,7 +4,7 @@ const SearchBar = props => {
   return (
     <div className="form-center container">
       <form onSubmit={props.onSubmit}>
-        <input className="form-control-lg" style={{width: "50%"}} type="text" placeholder={props.placeholder} aria-label="Search" autoComplete="off" name="searchValue" id="cardSearchBar" onChange={props.onChange} value={props.value} />
+        <input className="form-control-lg" style={{width: "50%"}} type="text" placeholder={props.placeholder} aria-label="Search" autoComplete="off" name="searchValue" id="cardSearchBar" onChange={props.onChange} value={props.value.replaceAll("%2B", "+")} />
         <Link
           to={{
             pathname: `/${props.page}=${props.searchTerm}&pg=1`

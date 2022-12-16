@@ -21,7 +21,7 @@ firebase serve
 
 ### Frontend
 
-To run the frontend, first `cd tumbledmtg-react`, then create a .env file and set API_ENDPOINT to your custom endpoint (see [.env.example](tumbledmtg-react/.env.example)).
+To run the frontend, first `cd tumbledmtg-react`, then create a .env file and set `REACT_APP_API_ENDPOINT` to your custom endpoint (see [.env.example](tumbledmtg-react/.env.example)).
 
 Once that is done, execute:
 

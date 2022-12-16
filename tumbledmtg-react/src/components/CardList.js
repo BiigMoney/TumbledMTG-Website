@@ -57,13 +57,14 @@ class CardList extends Component {
   disableSubmit = () => {
     let path = queryString.parse(window.location.pathname)
     let {searchTerm} = this.state
+    if ((path["/search"] === "null" && searchTerm.length === 0) || (path["/search"].length === 0 && searchTerm.length === 0)) {
+      if (this.state.fbCards) this.getFromAll(this.state.fbCards, 1)
+      return
+    }
     this.setState({
       pgNum: 1,
       currentSearch: searchTerm
     })
-    if ((path["/search"] === "null" && searchTerm.length === 0) || (path["/search"].length === 0 && searchTerm.length === 0)) {
-      this.getFromAll(this.state.fbCards, 1)
-    }
   }
 
   getColorNum = a => {
@@ -94,13 +95,13 @@ class CardList extends Component {
     if (endidx < cards.length) {
       for (var i = startidx; i < endidx; i++) {
         const card = cards[i]
-        card["url"] = `https://firebasestorage.googleapis.com/v0/b/tumbledmtg-website.appspot.com/o/${encodeURI(card.name)}.jpg?alt=media`
+        card["url"] = `https://firebasestorage.googleapis.com/v0/b/tumbledmtg-website.appspot.com/o/${encodeURI(card.name)}.png?alt=media`
         cardArr.push(card)
       }
     } else {
       for (var j = startidx; j < cards.length; j++) {
         const card = cards[j]
-        card["url"] = `https://firebasestorage.googleapis.com/v0/b/tumbledmtg-website.appspot.com/o/${encodeURI(card.name)}.jpg?alt=media`
+        card["url"] = `https://firebasestorage.googleapis.com/v0/b/tumbledmtg-website.appspot.com/o/${encodeURI(card.name)}.png?alt=media`
         cardArr.push(card)
       }
     }
@@ -387,23 +388,7 @@ class CardList extends Component {
       }
       tempCards.push(card)
     })
-    tempCards.sort((a, b) => {
-      if (a.cmc === b.cmc) {
-        if (this.getColorNum(a.color) === this.getColorNum(b.color)) {
-          if (a?.type.includes("Land") === b?.type.includes("Land")) {
-            return 0
-          } else if (a?.type.includes("Land") && !b?.type.includes("Land")) {
-            return 1
-          } else {
-            return -1
-          }
-        } else {
-          return this.getColorNum(b.color) - this.getColorNum(a.color)
-        }
-      } else {
-        return a.cmc - b.cmc
-      }
-    })
+    tempCards.sort((a, b) => this.getCardValue(b) - this.getCardValue(a))
 
     let cards = []
 
@@ -424,6 +409,21 @@ class CardList extends Component {
     }
 
     this.setState({allCards: tempCards, currentSearch: search, cards, isLoading: false})
+  }
+
+  getCardValue = card => {
+    let value = 299000000000 - (card?.cmc || 0) * 1000000000
+    if (card?.type?.includes("Land")) value -= 100000000000
+    if (card?.color?.includes("M")) value -= 100000000
+    if (card?.color?.includes("W")) value += 10000000
+    if (card?.color?.includes("U")) value += 1000000
+    if (card?.color?.includes("B")) value += 100000
+    if (card?.color?.includes("R")) value += 10000
+    if (card?.color?.includes("G")) value += 1000
+    if (card?.type?.includes("Creature")) value += 100
+    if (card?.type?.includes("Artifact")) value += 10
+    if (card?.type?.includes("Enchantment")) value += 1
+    return value
   }
 
   componentDidMount() {
@@ -490,7 +490,7 @@ class CardList extends Component {
               })}
           </div>
         </div>
-        {this.state.cards.length > 8 ? <NextPrevButtons bottom prevDisabled={!this.state.isLoading && this.state.allCards.length > (parseInt(this.state.pgNum) - 1) * this.cardsPerPage && this.state.pgNum > 1} prevNext={this.pgDown} nextDisabled={!this.state.isLoading && this.state.allCards.length > this.cardsPerPage && Math.ceil(this.state.allCards.length / this.cardsPerPage) > this.state.pgNum} onNext={this.pgUp} /> : null}
+        {this.state.cards.length > 8 ? <NextPrevButtons bottom prevDisabled={!this.state.isLoading && this.state.allCards.length > (parseInt(this.state.pgNum) - 1) * this.cardsPerPage && this.state.pgNum > 1} onPrev={this.pgDown} nextDisabled={!this.state.isLoading && this.state.allCards.length > this.cardsPerPage && Math.ceil(this.state.allCards.length / this.cardsPerPage) > this.state.pgNum} onNext={this.pgUp} /> : null}
       </Fragment>
     )
   }

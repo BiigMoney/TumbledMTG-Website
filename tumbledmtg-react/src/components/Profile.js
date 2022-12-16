@@ -125,7 +125,7 @@ export default class Profile extends Component {
                       </tbody>
                     </table>
                     <h5>
-                      <a href={`/decklists=&pg=1&user=true&id=${queryString.parse(this.props.location.pathname)["/profile"]}`} rel="noreferrer" target="_blank">
+                      <a href={`/decklists=&pg=1&user=true&id=${queryString.parse(this.props.location.pathname)["/profile"]}`} rel="noopener noreferrer" target="_blank">
                         See all decklists by user.
                       </a>
                     </h5>
@@ -149,12 +149,12 @@ export default class Profile extends Component {
                             <tr key={tournament.url}>
                               <th scope="col">{`${tournament.place}/${tournament.entrants}`}</th>
                               <th scope="col">
-                                <a href={tournament.url} rel="noreferrer" target="_blank">
+                                <a href={tournament.url} rel="noopener noreferrer" target="_blank">
                                   {tournament.url}
                                 </a>
                               </th>
                               <th scope="col">
-                                <a href={tournament.decklistUsed} rel="noreferrer" target="_blank">
+                                <a href={tournament.decklistUsed} rel="noopener noreferrer" target="_blank">
                                   {tournament.decklistUsed}
                                 </a>
                               </th>
